@@ -23,17 +23,18 @@ jobs:
         with:
           node-version: '22.x'
 
-      - name: npm install and build
+      - name: npm install, build, and test
         run: |
           npm install
+          chmod +x ./node_modules/.bin/vite 
           npm run build --if-present
-        working-directory: ./client # <-- CORREÇÃO 1
+        working-directory: ./client
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: client/build # <-- CORREÇÃO 2
+          path: client/build 
 
   deploy:
     runs-on: ubuntu-latest
