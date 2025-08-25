@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python app to Azure Web App - TechRoute
+name: Build and deploy Python app to Azure Web App - techroute
 
 on:
   push:
@@ -58,14 +58,14 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_099E3D38FB0B4DEDA9AE427B0C60269A }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DB4A0FA09BEC4521B22CCBBBE44F7AA5 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1FE95FA7C2FC4A8F9CBF2DF9977CEE6D }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FC25C8A9B7254F618CB9A2EAC16AABF5 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3B3152ABA2E740238712D2D77AB9F17B }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D3AC64FB1ECE4F2597485C772E60E593 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'TechRoute'
+          app-name: 'techroute'
           slot-name: 'Production'
           
