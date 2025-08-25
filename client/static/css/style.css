@@ -14,6 +14,7 @@ body {
     font-family: var(--font-family);
     background-color: var(--dark-bg);
     color: #f0f0f0;
+    padding-top: 70px; /* Adicionado para não sobrepor o conteúdo */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -44,7 +45,6 @@ h1, h2, h3, h4, h5, h6 {
 .hero-section {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     min-height: 80vh;
-    padding-top: 100px;
     padding-bottom: 40px;
 }
 
