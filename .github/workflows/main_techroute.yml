@@ -24,23 +24,18 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Create and start virtual environment
+      - name: Install dependencies
         run: |
           python -m venv venv
           source venv/bin/activate
-      
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-        
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+          pip install -r requirements.txt
+        working-directory: ./server # <-- CORREÇÃO 1
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: |
-            .
-            !venv/
+          path: ./server # <-- CORREÇÃO 2
 
   deploy:
     runs-on: ubuntu-latest
