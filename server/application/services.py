@@ -1,4 +1,4 @@
-from domain.models import Visita, StatusUpdate, Status, StatusHistoryItem
+from domain.models import Visita, StatusUpdate, Status, StatusHistoryItem, PostVisitNotes, NoteItem
 from datetime import date, time, datetime
 
 class VisitService:
@@ -10,6 +10,7 @@ class VisitService:
                 "location": "123 Flower Street", "technician": "Carlos Silva",
                 "service_type": "Fiber Installation", "status": Status.SCHEDULED,
                 "status_history": [StatusHistoryItem(status=Status.SCHEDULED, timestamp=datetime.now())],
+                "notes": [],
                 "checklist_items": []
             },
             {
@@ -20,6 +21,7 @@ class VisitService:
                     StatusHistoryItem(status=Status.SCHEDULED, timestamp=datetime.now()),
                     StatusHistoryItem(status=Status.IN_PROGRESS, timestamp=datetime.now(), comment="Technician on the way.")
                 ],
+                "notes": [],
                 "checklist_items": []
             },
             {
@@ -27,6 +29,7 @@ class VisitService:
                 "location": "789 Central Square", "technician": "Pedro Costa",
                 "service_type": "Cable Repair", "status": Status.COMPLETED,
                 "status_history": [StatusHistoryItem(status=Status.COMPLETED, timestamp=datetime.now())],
+                "notes": [NoteItem(note="Service completed successfully. All systems are operational.", timestamp=datetime.now())],
                 "checklist_items": []
             }
         ]
@@ -85,3 +88,24 @@ class VisitService:
         print(f"Visit status {visita_id} updated to {update_data.new_status.value}")
 
         return {"message": "Visit status updated successfully!"}
+
+    def salvar_observacoes(self, notes: PostVisitNotes):
+        visit_to_update = None
+        for v in self.visits:
+            if v['id'] == notes.visita_id:
+                visit_to_update = v
+                break
+
+        if not visit_to_update:
+            raise ValueError("Visit not found")
+
+        # Validate if status allows adding notes
+        if visit_to_update['status'] not in [Status.COMPLETED, Status.IN_PROGRESS]:
+            raise ValueError(f"Cannot add notes to a visit with status '{visit_to_update['status']}'.")
+
+        new_note = NoteItem(note=notes.observacoes_tecnico, timestamp=datetime.now())
+        visit_to_update['notes'].append(new_note.model_dump())
+
+        print(f"Post-visit note added to visit {notes.visita_id}")
+
+        return {"message": "Post-visit note saved successfully!"}

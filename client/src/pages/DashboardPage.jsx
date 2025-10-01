@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import StatusUpdateModal from '../components/StatusUpdateModal';
+import NotesModal from '../components/NotesModal';
 import './DashboardPage.css';
 
 function DashboardPage() {
@@ -9,8 +10,13 @@ function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
     const [selectedVisitId, setSelectedVisitId] = useState(null);
+
+    const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
+    const [selectedVisitForNotes, setSelectedVisitForNotes] = useState(null);
+
+    const [expandedNotesVisitId, setExpandedNotesVisitId] = useState(null);
 
     const fetchVisits = async () => {
         try {
@@ -31,16 +37,30 @@ function DashboardPage() {
         fetchVisits();
     }, []);
 
-    const handleOpenModal = (visitId) => {
+    const handleOpenStatusModal = (visitId) => {
         setSelectedVisitId(visitId);
-        setIsModalOpen(true);
+        setIsStatusModalOpen(true);
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
+    const handleCloseStatusModal = () => {
+        setIsStatusModalOpen(false);
         setSelectedVisitId(null);
-        // Reload visits to reflect the new status
         fetchVisits();
+    };
+
+    const handleOpenNotesModal = (visit) => {
+        setSelectedVisitForNotes(visit);
+        setIsNotesModalOpen(true);
+    };
+
+    const handleCloseNotesModal = () => {
+        setIsNotesModalOpen(false);
+        setSelectedVisitForNotes(null);
+        fetchVisits();
+    };
+
+    const toggleNotesExpansion = (visitId) => {
+        setExpandedNotesVisitId(prevId => (prevId === visitId ? null : visitId));
     };
 
     const formatTimestamp = (timestamp) => {
@@ -66,35 +86,73 @@ function DashboardPage() {
             <main className="dashboard-container">
                 <h1>Visits Dashboard</h1>
                 <div className="visits-list">
-                    {visits.map((visit) => (
-                        <div key={visit.id} className="visit-card">
-                            <h3>{visit.service_type}</h3>
-                            <p><strong>Location:</strong> {visit.location}</p>
-                            <p><strong>Technician:</strong> {visit.technician}</p>
-                            <p><strong>Date:</strong> {visit.date}</p>
-                            <p><strong>Current Status:</strong> <span className={`status status-${visit.status.toLowerCase()}`}>{visit.status}</span></p>
-                            <div className="status-history">
-                                <strong>History:</strong>
-                                <ul>
-                                    {visit.status_history && visit.status_history.map((historyItem, index) => (
-                                        <li key={index}>
-                                            <span>{formatTimestamp(historyItem.timestamp)} - <strong>{historyItem.status}</strong></span>
-                                            {historyItem.comment && <p className="comment">- {historyItem.comment}</p>}
-                                        </li>
-                                    ))}
-                                </ul>
+                    {visits.map((visit) => {
+                        const isNotesExpanded = expandedNotesVisitId === visit.id;
+                        const latestNote = visit.notes && visit.notes.length > 0 ? visit.notes[visit.notes.length - 1] : null;
+
+                        return (
+                            <div key={visit.id} className="visit-card">
+                                <h3>{visit.service_type}</h3>
+                                <p><strong>Location:</strong> {visit.location}</p>
+                                <p><strong>Technician:</strong> {visit.technician}</p>
+                                <p><strong>Date:</strong> {visit.date}</p>
+                                <p><strong>Current Status:</strong> <span className={`status status-${visit.status.toLowerCase()}`}>{visit.status}</span></p>
+                                
+                                {visit.notes && visit.notes.length > 0 && (
+                                    <div className="notes-display expandable" onClick={() => toggleNotesExpansion(visit.id)}>
+                                        <strong>Technician Notes {visit.notes.length > 1 ? `(Click to ${isNotesExpanded ? 'collapse' : 'expand'})` : ''}</strong>
+                                        {isNotesExpanded ? (
+                                            <ul>
+                                                {visit.notes.slice().reverse().map((noteItem, index) => (
+                                                    <li key={index}>
+                                                        <span>{formatTimestamp(noteItem.timestamp)}</span>
+                                                        <p>{noteItem.note}</p>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p>{latestNote.note}</p>
+                                        )}
+                                    </div>
+                                )}
+
+                                <div className="status-history">
+                                    <strong>History:</strong>
+                                    <ul>
+                                        {visit.status_history && visit.status_history.map((historyItem, index) => (
+                                            <li key={index}>
+                                                <span>{formatTimestamp(historyItem.timestamp)} - <strong>{historyItem.status}</strong></span>
+                                                {historyItem.comment && <p className="comment">- {historyItem.comment}</p>}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div className="card-actions">
+                                    <button onClick={() => handleOpenStatusModal(visit.id)}>
+                                        Update Status
+                                    </button>
+                                    <button 
+                                        onClick={() => handleOpenNotesModal(visit)}
+                                        disabled={!['IN_PROGRESS', 'COMPLETED'].includes(visit.status)}
+                                    >
+                                        Add/Edit Notes
+                                    </button>
+                                </div>
                             </div>
-                            <button onClick={() => handleOpenModal(visit.id)}>
-                                Update Status
-                            </button>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </main>
-            {isModalOpen && (
+            {isStatusModalOpen && (
                 <StatusUpdateModal
                     visitId={selectedVisitId}
-                    onClose={handleCloseModal}
+                    onClose={handleCloseStatusModal}
+                />
+            )}
+            {isNotesModalOpen && (
+                <NotesModal
+                    visit={selectedVisitForNotes}
+                    onClose={handleCloseNotesModal}
                 />
             )}
             <Footer />

@@ -21,6 +21,10 @@ class StatusHistoryItem(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
     comment: Optional[str] = None
 
+class NoteItem(BaseModel):
+    note: str
+    timestamp: datetime = Field(default_factory=datetime.now)
+
 class Visita(BaseModel):
     id: str
     date: date
@@ -30,4 +34,10 @@ class Visita(BaseModel):
     service_type: str
     status: Status = Status.SCHEDULED
     status_history: List[StatusHistoryItem] = []
+    notes: List[NoteItem] = []
     checklist_items: List[str] = []
+
+
+class PostVisitNotes(BaseModel):
+    visita_id: str
+    observacoes_tecnico: str
