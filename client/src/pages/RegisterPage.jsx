@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Para navegação
-import './RegisterPage.css'; // O CSS que vamos criar
+import { Link, useNavigate } from 'react-router-dom'; // For navigation
+import './RegisterPage.css'; // The CSS we will create
 
 function RegisterPage() {
-  // Hook para navegação programática (ex: após submeter o formulário)
+  // Hook for programmatic navigation (e.g., after form submission)
   const navigate = useNavigate();
 
-  // Estado para guardar os dados do formulário
+  // State to hold form data
   const [formData, setFormData] = useState({
+    id: `visita_${Date.now()}`,
     date: '',
     time: '',
     location: '',
@@ -15,16 +16,16 @@ function RegisterPage() {
     service_type: ''
   });
 
-  // Estado para a lista de checklist
+  // State for the checklist
   const [checklistItems, setChecklistItems] = useState([
     { id: 1, value: 'Security Check', isChecked: false },
     { id: 2, value: 'Filter Cleaning', isChecked: false }
   ]);
   
-  // Estado para o campo de texto do novo item do checklist
+  // State for the new checklist item text field
   const [newChecklistItem, setNewChecklistItem] = useState('');
 
-  // Função para lidar com mudanças nos inputs normais do formulário
+  // Handler for changes in normal form inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -33,7 +34,7 @@ function RegisterPage() {
     }));
   };
   
-  // Função para lidar com a mudança de estado dos checkboxes
+  // Handler for checkbox state changes
   const handleCheckboxChange = (id) => {
     setChecklistItems(
       checklistItems.map(item =>
@@ -42,40 +43,50 @@ function RegisterPage() {
     );
   };
 
-  // Função para adicionar um novo item ao checklist
+  // Function to add a new item to the checklist
   const handleAddChecklistItem = () => {
-    if (newChecklistItem.trim() === '') return; // Não adiciona item vazio
+    if (newChecklistItem.trim() === '') return; // Don't add empty items
     const newItem = {
-      id: Date.now(), // ID único baseado no tempo
+      id: Date.now(), // Unique ID based on timestamp
       value: newChecklistItem,
       isChecked: false
     };
     setChecklistItems([...checklistItems, newItem]);
-    setNewChecklistItem(''); // Limpa o input
+    setNewChecklistItem(''); // Clear the input
   };
   
-  // Função para lidar com a submissão do formulário
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Previne o recarregamento da página
+  // Handler for form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent page reload
 
     const finalData = {
       ...formData,
       checklist_items: checklistItems.filter(item => item.isChecked).map(item => item.value)
     };
     
-    console.log('Dados a serem enviados para a API:', finalData);
-    
-    // TODO: Adicionar aqui a lógica para enviar 'finalData' para sua API com axios
-    // Exemplo:
-    // axios.post('/api/visits', finalData)
-    //   .then(response => {
-    //     console.log('Visita registrada!', response.data);
-    //     navigate('/'); // Redireciona para a página inicial após o sucesso
-    //   })
-    //   .catch(error => console.error('Erro ao registrar visita:', error));
+    try {
+      const response = await fetch('http://127.0.0.1:8000/visits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(finalData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to register visit.');
+      }
+
+      alert('Visit registered successfully!');
+      navigate('/dashboard'); // Redirect to dashboard on success
+    } catch (error) {
+      console.error('Error registering visit:', error);
+      alert(error.message);
+    }
   };
 
-  // Aqui está seu HTML convertido para JSX
+  // Here is your HTML converted to JSX
   return (
     <main className="py-5" style={{ marginTop: '60px' }}>
       <div className="container" style={{ maxWidth: '800px' }}>

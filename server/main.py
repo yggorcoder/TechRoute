@@ -12,6 +12,7 @@ origins = [
      "http://localhost",
     "http://localhost:5500",  # Origem comum do VS Code Live Server
     "http://127.0.0.1:5500", # Outra variação
+    "http://localhost:5173",  # Origem do Vite dev server
 
 ]
 

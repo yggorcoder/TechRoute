@@ -25,6 +25,9 @@ function Header() {
               <HashLink className="nav-link" smooth to="/#about">About Us</HashLink>
             </li>
             <li className="nav-item">
+              <Link className="nav-link" to="/dashboard">Dashboard</Link>
+            </li>
+            <li className="nav-item">
               <Link to="/register" className="btn btn-outline-primary ms-2">Register New Visit</Link>
             </li>
           </ul>

@@ -1,0 +1,109 @@
+.dashboard-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.visits-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.visit-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+    transition: box-shadow 0.3s ease;
+}
+
+.visit-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.visit-card h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.visit-card p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.visit-card button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.visit-card button:hover {
+    background-color: #0056b3;
+}
+
+.status {
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: #fff;
+}
+
+.status-scheduled {
+    background-color: #3498db; /* Blue */
+}
+
+.status-in_progress {
+    background-color: #f1c40f; /* Yellow */
+}
+
+.status-completed {
+    background-color: #2ecc71; /* Green */
+}
+
+.status-rescheduled {
+    background-color: #e67e22; /* Orange */
+}
+
+.status-cancelled {
+    background-color: #e74c3c; /* Red */
+}
+
+/* Status History Styles */
+.status-history {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.status-history strong {
+    font-size: 0.95rem;
+    color: #333; /* Darker color for better visibility */
+}
+
+.status-history ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.status-history li {
+    margin-bottom: 0.5rem;
+}
+
+.status-history .comment {
+    margin-top: 0.25rem;
+    margin-left: 1rem;
+    font-style: italic;
+    color: #777;
+    padding-bottom: 0.25rem;
+}
