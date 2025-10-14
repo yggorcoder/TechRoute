@@ -7,7 +7,7 @@ function HeroSection() {
       <div className="container">
         <h1 className="display-3 fw-bold mb-4">TechRoute Visit Management</h1>
         <p className="lead my-4 fs-4">Streamline your technical visits with our comprehensive management system.</p>
-        <Link to="/register" className="btn btn-primary btn-lg fw-bold px-4 py-3">Register New Visit</Link>
+        <Link to="/register-visit" className="btn btn-primary btn-lg fw-bold px-4 py-3">Register New Visit</Link>
       </div>
     </section>
   );

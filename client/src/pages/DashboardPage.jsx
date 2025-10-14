@@ -1,14 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import StatusUpdateModal from '../components/StatusUpdateModal';
 import NotesModal from '../components/NotesModal';
+import WeeklyDashboard from '../components/WeeklyDashboard';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableVisitCard } from '../components/SortableVisitCard';
 import './DashboardPage.css';
+import { useAuth } from '../context/authContext';
+
+// Define a logical order for statuses
+const statusOrder = {
+    SCHEDULED: 1,
+    IN_PROGRESS: 2,
+    COMPLETED: 3,
+    RESCHEDULED: 4,
+    CANCELLED: 5,
+};
 
 function DashboardPage() {
+    const {token} = useAuth();
     const [visits, setVisits] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const [visitFilters, setVisitFilters] = useState({ technicians: [], statuses: [] });
+    const [sortOrder, setSortOrder] = useState('default');
+    const [allTechnicians, setAllTechnicians] = useState([]);
+    const [allStatuses, setAllStatuses] = useState([]);
 
     const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
     const [selectedVisitId, setSelectedVisitId] = useState(null);
@@ -20,12 +40,21 @@ function DashboardPage() {
 
     const fetchVisits = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/visits');
+            const response = await fetch('http://127.0.0.1:8000/visits', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Authentication failed. Please log in again.');
+                }
                 throw new Error('Failed to fetch visits.');
             }
             const data = await response.json();
             setVisits(data);
+            setAllTechnicians([...new Set(data.map(v => v.technician))]);
+            setAllStatuses([...new Set(data.map(v => v.status))].sort((a, b) => statusOrder[a] - statusOrder[b]));
         } catch (err) {
             setError(err.message);
         } finally {
@@ -36,6 +65,48 @@ function DashboardPage() {
     useEffect(() => {
         fetchVisits();
     }, []);
+
+    useEffect(() => {
+        if (sortOrder === 'default') return;
+        const sortedVisits = [...visits];
+        if (sortOrder === 'date') {
+            sortedVisits.sort((a, b) => new Date(a.date) - new Date(b.date));
+        } else if (sortOrder === 'status') {
+            sortedVisits.sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+        }
+        setVisits(sortedVisits);
+    }, [sortOrder]);
+
+    const displayedVisits = useMemo(() => {
+        return visits.filter(visit => {
+            const techMatch = visitFilters.technicians.length === 0 || visitFilters.technicians.includes(visit.technician);
+            const statusMatch = visitFilters.statuses.length === 0 || visitFilters.statuses.includes(visit.status);
+            return techMatch && statusMatch;
+        });
+    }, [visits, visitFilters]);
+
+    const handleDragEnd = (event) => {
+        const { active, over } = event;
+        if (active && over && active.id !== over.id) {
+            setVisits((items) => {
+                const oldIndex = items.findIndex(item => item.id === active.id);
+                const newIndex = items.findIndex(item => item.id === over.id);
+                if (oldIndex === -1 || newIndex === -1) return items;
+                return arrayMove(items, oldIndex, newIndex);
+            });
+            setSortOrder('default');
+        }
+    };
+
+    const handleFilterChange = (filterName, value) => {
+        setVisitFilters(prev => {
+            const currentValues = prev[filterName];
+            const newValues = currentValues.includes(value)
+                ? currentValues.filter(item => item !== value)
+                : [...currentValues, value];
+            return { ...prev, [filterName]: newValues };
+        });
+    };
 
     const handleOpenStatusModal = (visitId) => {
         setSelectedVisitId(visitId);
@@ -84,64 +155,59 @@ function DashboardPage() {
         <>
             <Header />
             <main className="dashboard-container">
-                <h1>Visits Dashboard</h1>
-                <div className="visits-list">
-                    {visits.map((visit) => {
-                        const isNotesExpanded = expandedNotesVisitId === visit.id;
-                        const latestNote = visit.notes && visit.notes.length > 0 ? visit.notes[visit.notes.length - 1] : null;
-
-                        return (
-                            <div key={visit.id} className="visit-card">
-                                <h3>{visit.service_type}</h3>
-                                <p><strong>Location:</strong> {visit.location}</p>
-                                <p><strong>Technician:</strong> {visit.technician}</p>
-                                <p><strong>Date:</strong> {visit.date}</p>
-                                <p><strong>Current Status:</strong> <span className={`status status-${visit.status.toLowerCase()}`}>{visit.status}</span></p>
-                                
-                                {visit.notes && visit.notes.length > 0 && (
-                                    <div className="notes-display expandable" onClick={() => toggleNotesExpansion(visit.id)}>
-                                        <strong>Technician Notes {visit.notes.length > 1 ? `(Click to ${isNotesExpanded ? 'collapse' : 'expand'})` : ''}</strong>
-                                        {isNotesExpanded ? (
-                                            <ul>
-                                                {visit.notes.slice().reverse().map((noteItem, index) => (
-                                                    <li key={index}>
-                                                        <span>{formatTimestamp(noteItem.timestamp)}</span>
-                                                        <p>{noteItem.note}</p>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            <p>{latestNote.note}</p>
-                                        )}
+                <WeeklyDashboard allTechnicians={allTechnicians} allStatuses={allStatuses} />
+                <div className="visits-dashboard-header">
+                    <h1>Visits Dashboard</h1>
+                    <div className="dashboard-controls">
+                        <div className="filter-group">
+                            <label>Filter by Technician</label>
+                            <div className="checkbox-group">
+                                {allTechnicians.map(tech => (
+                                    <div key={tech} className="checkbox-item">
+                                        <input type="checkbox" id={`tech-${tech}`} value={tech} checked={visitFilters.technicians.includes(tech)} onChange={() => handleFilterChange('technicians', tech)} />
+                                        <label htmlFor={`tech-${tech}`}>{tech}</label>
                                     </div>
-                                )}
-
-                                <div className="status-history">
-                                    <strong>History:</strong>
-                                    <ul>
-                                        {visit.status_history && visit.status_history.map((historyItem, index) => (
-                                            <li key={index}>
-                                                <span>{formatTimestamp(historyItem.timestamp)} - <strong>{historyItem.status}</strong></span>
-                                                {historyItem.comment && <p className="comment">- {historyItem.comment}</p>}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                                <div className="card-actions">
-                                    <button onClick={() => handleOpenStatusModal(visit.id)}>
-                                        Update Status
-                                    </button>
-                                    <button 
-                                        onClick={() => handleOpenNotesModal(visit)}
-                                        disabled={!['IN_PROGRESS', 'COMPLETED'].includes(visit.status)}
-                                    >
-                                        Add/Edit Notes
-                                    </button>
-                                </div>
+                                ))}
                             </div>
-                        );
-                    })}
+                        </div>
+                        <div className="filter-group">
+                            <label>Filter by Status</label>
+                            <div className="checkbox-group">
+                                {allStatuses.map(status => (
+                                    <div key={status} className="checkbox-item">
+                                        <input type="checkbox" id={`status-${status}`} value={status} checked={visitFilters.statuses.includes(status)} onChange={() => handleFilterChange('statuses', status)} />
+                                        <label htmlFor={`status-${status}`}>{status}</label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="filter-group">
+                            <label>Sort by</label>
+                            <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                                <option value="default">Manual Order</option>
+                                <option value="date">Date</option>
+                                <option value="status">Status</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
+                <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                    <SortableContext items={displayedVisits.map(v => v.id)} strategy={horizontalListSortingStrategy}>
+                        <div className="visits-list">
+                            {displayedVisits.map((visit) => (
+                                <SortableVisitCard
+                                    key={visit.id}
+                                    visit={visit}
+                                    formatTimestamp={formatTimestamp}
+                                    toggleNotesExpansion={toggleNotesExpansion}
+                                    expandedNotesVisitId={expandedNotesVisitId}
+                                    handleOpenStatusModal={handleOpenStatusModal}
+                                    handleOpenNotesModal={handleOpenNotesModal}
+                                />
+                            ))}
+                        </div>
+                    </SortableContext>
+                </DndContext>
             </main>
             {isStatusModalOpen && (
                 <StatusUpdateModal

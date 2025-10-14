@@ -1,0 +1,94 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    color: #555; /* Set base text color for readability */
+}
+
+.modal-content strong {
+    color: #333; /* Darker color for labels */
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.status {
+    padding: 3px 8px;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.status-scheduled {
+    background-color: #3a86ff;
+}
+
+.status-in_progress {
+    background-color: #ffbe0b;
+}
+
+.status-completed {
+    background-color: #5cb85c;
+}
+
+.status-cancelled {
+    background-color: #d9534f;
+}
+
+.status-rescheduled {
+    background-color: #f0ad4e;
+}
+
+.notes-display, .status-history {
+    margin-top: 15px;
+}
+
+.notes-display ul, .status-history ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.notes-display li, .status-history li {
+    background: #f9f9f9;
+    border-left: 3px solid #ccc;
+    padding: 10px;
+    margin-bottom: 8px;
+}
+
+.notes-display li span, .status-history li span {
+    font-size: 0.85em;
+    color: #555;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.comment {
+    font-style: italic;
+    margin-top: 5px;
+}

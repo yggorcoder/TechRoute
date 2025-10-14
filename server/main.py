@@ -1,12 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.routers import router as visit_router
+from api.auth_router import router as auth_router
 
 
 
 
 app = FastAPI(title="TechRoute API")
 app.include_router(visit_router)
+app.include_router(auth_router)
+
 
 origins = [
      "http://localhost",

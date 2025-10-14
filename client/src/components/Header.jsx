@@ -1,8 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link'; // Para links âncora como #features
+import { useAuth } from '../context/authContext';
 
 function Header() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <header className="navbar navbar-expand-lg fixed-top navbar-dark">
       <div className="container">
@@ -24,12 +33,34 @@ function Header() {
             <li className="nav-item">
               <HashLink className="nav-link" smooth to="/#about">About Us</HashLink>
             </li>
+
+            {/* lógica condicional para exibir botões*/}
+            {isAuthenticated ? (
+              <>
+                <li className='nav-item'>
+                  <Link className='nav-link' to='/dashboard'>Dashboard</Link>
+                </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/dashboard">Dashboard</Link>
-            </li>
-            <li className="nav-item">
-              <Link to="/register" className="btn btn-outline-primary ms-2">Register New Visit</Link>
-            </li>
+              {user && <span className='navbar-text me-3'>
+                Welcome, {user.username}!
+              </span>}
+              </li>
+              <li className="nav-item">
+                <button className="btn btn-outline-primary" onClick={handleLogout}>
+                  Logout
+                </button>
+              </li>
+              </>
+            ) : (
+              //se não tiver autenticado
+              <>
+                <li className="nav-item">
+                  <Link to="/login" className="btn btn-outline-primary ms-2">
+                    Login
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>
