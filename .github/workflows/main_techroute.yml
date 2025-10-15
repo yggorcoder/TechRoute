@@ -8,9 +8,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'server/**'
-      - '.github/workflows/main_techroute.yml'
   workflow_dispatch:
 
 jobs:
