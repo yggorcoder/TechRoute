@@ -24,12 +24,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pwd
-          ls -la
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
-        working-directory: ./server
+          python -m venv server/venv
+          source server/venv/bin/activate
+          pip install -r server/requirements.txt
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
