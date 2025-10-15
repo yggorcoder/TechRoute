@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python app to Azure Web App - techroute-web
+name: Build and deploy Python app to Azure Web App - techroute-api-yggor-2
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.11'
 
       # 🛠️ Local Build Section (Optional)
       # The following section in your workflow is designed to catch build issues early on the client side, before deployment. This can be helpful for debugging and validation. However, if this step significantly increases deployment time and early detection is not critical for your workflow, you may remove this section to streamline the deployment process.
@@ -63,14 +63,14 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_98DEC1F275ED4DC1B0021F3ACD873F37 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6119D08E77184F38B1C52D8823EB1695 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D0AE845BC96D46F9BFDCC5F7605E6190 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EA719A102DEB4325AF448B91111F9C30 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_48572989F69E4DF9858ED8AC33B929C8 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_35BB121D18524572895D7FD1A30FAF57 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'techroute-web'
+          app-name: 'techroute-api-yggor-2'
           slot-name: 'Production'
           
