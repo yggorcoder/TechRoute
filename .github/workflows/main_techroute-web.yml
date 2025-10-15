@@ -1,7 +1,8 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
+# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Node.js app to Azure Web App - techroute-web
+name: Build and deploy Python app to Azure Web App - techroute-web
 
 on:
   push:
@@ -18,23 +19,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
+      - name: Set up Python version
+        uses: actions/setup-python@v5
         with:
-          node-version: '22.x'
+          python-version: '3.13'
 
-      - name: npm install, build, and test
+      # 🛠️ Local Build Section (Optional)
+      # The following section in your workflow is designed to catch build issues early on the client side, before deployment. This can be helpful for debugging and validation. However, if this step significantly increases deployment time and early detection is not critical for your workflow, you may remove this section to streamline the deployment process.
+      - name: Create and Start virtual environment and Install dependencies
         run: |
-          npm install
-          chmod +x ./node_modules/.bin/vite 
-          npm run build --if-present
-        working-directory: ./client
-
-      - name: Upload artifact for deployment job
+          python -m venv antenv
+          source antenv/bin/activate
+          pip install -r requirements.txt
+                
+      # By default, when you enable GitHub CI/CD integration through the Azure portal, the platform automatically sets the SCM_DO_BUILD_DURING_DEPLOYMENT application setting to true. This triggers the use of Oryx, a build engine that handles application compilation and dependency installation (e.g., pip install) directly on the platform during deployment. Hence, we exclude the antenv virtual environment directory from the deployment artifact to reduce the payload size. 
+      - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
-          path: client/build 
+          name: python-app
+          path: |
+            .
+            !antenv/
+
+      # 🚫 Opting Out of Oryx Build
+      # If you prefer to disable the Oryx build process during deployment, follow these steps:
+      # 1. Remove the SCM_DO_BUILD_DURING_DEPLOYMENT app setting from your Azure App Service Environment variables.
+      # 2. Refer to sample workflows for alternative deployment strategies: https://github.com/Azure/actions-workflow-samples/tree/master/AppService
+      
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,19 +58,19 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: node-app
+          name: python-app
       
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4B265DB7EB7046278026DEAF04CFCF01 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_45D78A64F9DF494CBABF6701F50FBBDD }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_77DD6221E40F4217ADF7858E9250E241 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_654EFE0486D3406A835228B3D555B747 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_20FA5AD6B259491C964B6A3702A6BA5E }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8CD118B8D79F41999914005CD9930095 }}
 
       - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
         with:
           app-name: 'techroute-web'
           slot-name: 'Production'
-          package: .
+          
