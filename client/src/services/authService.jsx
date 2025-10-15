@@ -2,7 +2,7 @@ import axios from 'axios';
 
 //Define a URL base da API
 //Em um projeto maior, isso viria de uma variável de ambiente.
-const API_URL = 'http://127.0.0.1:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 //Cria uma instâncai do axios para não precisar repetir a URL base
 const apiClient = axios.create({
