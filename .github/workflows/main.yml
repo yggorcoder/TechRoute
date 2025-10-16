@@ -21,7 +21,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/client"
-          api_location: ""
+          api_location: "server"
           output_location: "build"
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
