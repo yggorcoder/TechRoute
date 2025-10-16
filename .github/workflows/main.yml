@@ -23,3 +23,7 @@ jobs:
           app_location: "/client"
           api_location: ""
           output_location: "build"
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+
