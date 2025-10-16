@@ -29,3 +29,6 @@ app.add_middleware(
 )
 
 app.include_router(visit_router)
+
+# forçando um novo deploy
+# 16 de outubro de 2025 - 16:12
