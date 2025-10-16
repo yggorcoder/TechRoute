@@ -12,6 +12,7 @@ app.include_router(auth_router)
 
 
 origins = [
+    "https://calm-wave-0e27f731e.3.azurestaticapps.net",
      "http://localhost",
     "http://localhost:5500",  # Origem comum do VS Code Live Server
     "http://127.0.0.1:5500", # Outra variação
