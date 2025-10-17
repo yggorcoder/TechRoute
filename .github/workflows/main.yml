@@ -1,8 +1,7 @@
 name: Frontend CI/CD
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build_and_deploy_job:
@@ -10,19 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
+      - uses: actions/checkout@v4
+
       - name: Build And Deploy
-        id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/client"
-          api_location: "server"
-          output_location: "build"
+          app_location: "client"      # pasta do frontend
+          output_location: "build"    # saída do Vite
+          api_location: ""            # <— desativa API no SWA
+          skip_api_build: true        # <— garante que não builda "server"
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
