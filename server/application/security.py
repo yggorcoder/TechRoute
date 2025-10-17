@@ -9,8 +9,8 @@ from fastapi.security import OAuth2PasswordBearer
 # --- Imports de Modelos ---
 from domain.models import User
 
-# --- Configuração de Senha ---
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# --- Senhas: usar bcrypt_sha256 (sem limite de 72 bytes) ---
+pwd_context = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
