@@ -1,6 +1,7 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { jwtDecode } from 'jwt-decode'; // corrigido para a importação correta
-import authService, {apiClient} from "../services/authService";
+import authService from "../services/authService";
+import { api } from '../api';
 
 // 1. Cria o contexto
 const AuthContext = createContext(null);
@@ -20,7 +21,7 @@ export const AuthProvider = ({ children }) => {
       // Se a decodificação deu certo, o token é válido
       // Armazena o token para persistir a sessão e configura o cabeçalho da API.
       localStorage.setItem('token', token);
-      apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser({ username: decodedUser.sub, role: decodedUser.role});
   }   catch (error) {
       // Se o token for inválido ou expirado, jwt-decode lança um erro.
@@ -31,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   } else {
     // Se não há token, remove do localStorage e do cabeçalho da API.
     localStorage.removeItem('token');
-    delete apiClient.defaults.headers.common['Authorization'];
+    delete api.defaults.headers.common['Authorization'];
     setUser(null);
   }
 }, [token]);

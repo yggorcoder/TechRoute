@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import authServie from '../services/authService.jsx';
+import authService from '../services/authService.jsx';
 import FormField from './FormField.jsx';
 
 function RegistrationForm() {
@@ -29,7 +29,7 @@ function RegistrationForm() {
     setSuccess('');
 
     try {
-      await authServie.register(formData);
+      await authService.register(formData);
       setSuccess('Registration successful! You can now log in.');
       setTimeout(() => {
         navigate('/login');
