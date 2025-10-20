@@ -2,25 +2,28 @@
 import { api } from "../api";
 
 const authService = {
-  /**
-   * Login usando OAuth2 password flow (form-urlencoded).
-   * O backend espera campos "username" e "password" no corpo (não JSON).
-   */
   login: async (username, password) => {
     const form = new URLSearchParams();
     form.append("username", username.trim());
     form.append("password", password);
 
-    const res = await api.post("/auth/login", form, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    });
-    return res.data; // { access_token, token_type }
+    try {
+      const res = await api.post("/auth/login", form, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+      // sucesso: { access_token, token_type }
+      return res.data;
+    } catch (err) {
+      // extrai mensagem do backend, se houver
+      const detail =
+        err?.response?.data?.detail ||
+        err?.response?.statusText ||
+        err?.message ||
+        "Login failed";
+      throw new Error(detail); // deixa o componente decidir o que mostrar
+    }
   },
 
-  /**
-   * Registro de usuário (JSON).
-   * role deve ser "manager" ou "technician" (minúsculo); normalizamos aqui.
-   */
   register: async ({ username, email, password, role }) => {
     const payload = {
       username: username.trim(),
@@ -31,16 +34,18 @@ const authService = {
           ? "technician"
           : "manager",
     };
-
-    const res = await api.post("/auth/register", payload);
-    // sucesso pode ser 201 (Created) ou 200
-    if (!(res.status === 200 || res.status === 201)) {
-      throw new Error(`Register failed (${res.status})`);
+    try {
+      const res = await api.post("/auth/register", payload);
+      return res.data;
+    } catch (err) {
+      const detail =
+        err?.response?.data?.detail ||
+        err?.response?.statusText ||
+        err?.message ||
+        "Registration failed";
+      throw new Error(detail);
     }
-    return res.data; // { username, email, role }
   },
-
-  health: async () => (await api.get("/health")).data,
 };
 
 export default authService;
