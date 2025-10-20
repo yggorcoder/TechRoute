@@ -47,7 +47,7 @@ app.add_middleware(
 )
 
 # ---------- Routers ----------
-app.include_router(visit_router, prefix="/visits")
+app.include_router(visit_router)
 app.include_router(auth_router, prefix="/auth")
 
 # ---------- Utilitários ----------
