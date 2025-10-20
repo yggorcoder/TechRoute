@@ -10,6 +10,10 @@ const StatusUpdateModal = ({ visitId, onClose }) => {
     const isReschedule = newStatus === 'RESCHEDULED';
     const isCommentRequired = isReschedule || newStatus === 'CANCELLED';
 
+    import { updateVisitStatus } from '../services/visitService';
+
+// ... (rest of the component)
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (isCommentRequired && !comment.trim()) {
@@ -32,18 +36,7 @@ const StatusUpdateModal = ({ visitId, onClose }) => {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/visitas/${visitId}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Failed to update status.');
-            }
+            await updateVisitStatus(visitId, payload);
 
             alert('Status updated successfully!');
             onClose();

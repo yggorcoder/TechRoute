@@ -33,6 +33,13 @@ TechRoute is a full-stack application designed to streamline the scheduling, tra
   - `@react-pdf/renderer` (for client-side PDF generation)
   - Bootstrap (for styling and components)
 
+## Deployment
+
+The application is deployed on Azure:
+
+- **Frontend:** [https://calm-wave-0e27f731e.3.azurestaticapps.net/](https://calm-wave-0e27f731e.3.azurestaticapps.net/)
+- **Backend:** [https://techroute-api-yggor-2-e8dcazckehcyfpgy.canadacentral-01.azurewebsites.net/](https://techroute-api-yggor-2-e8dcazckehcyfpgy.canadacentral-01.azurewebsites.net/)
+
 ## Getting Started
 
 Follow these instructions to get a copy of the project up and running on your local machine for development and testing.
@@ -81,6 +88,10 @@ Follow these instructions to get a copy of the project up and running on your lo
       ```sh
       cd client
       ```
+    - Create a `.env` file in the `client` directory with the following content:
+        ```
+        VITE_API_URL=http://127.0.0.1:8000
+        ```
     - Install the required npm packages:
       ```sh
       npm install
@@ -90,6 +101,11 @@ Follow these instructions to get a copy of the project up and running on your lo
       npm run dev
       ```
     - The frontend will be accessible at `http://localhost:5173` (or another port if 5173 is busy).
+
+## Recent Changes
+
+- **API Refactoring:** All frontend API calls have been centralized into services (`authService.js`, `visitService.js`) to improve code organization and remove hardcoded URLs.
+- **Deployment Fixes:** Corrected API endpoints to use the production backend URL, resolving fetch errors in the deployed application.
 
 ## Usage
 

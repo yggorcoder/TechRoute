@@ -4,6 +4,10 @@ import './StatusUpdateModal.css'; // Reusing the same CSS for modals
 const NotesModal = ({ visit, onClose }) => {
     const [notes, setNotes] = useState('');
 
+    import { addNoteToVisit } from '../services/visitService';
+
+// ... (rest of the component)
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!notes.trim()) {
@@ -17,18 +21,7 @@ const NotesModal = ({ visit, onClose }) => {
         };
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/visitas/${visit.id}/notas`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Failed to save notes.');
-            }
+            await addNoteToVisit(visit.id, payload);
 
             alert('New note added successfully!');
             onClose();

@@ -17,6 +17,10 @@ function WeeklyDashboard({ allTechnicians, allStatuses }) {
     const [selectedVisit, setSelectedVisit] = useState(null);
 
 
+import { fetchDashboardVisits } from '../services/visitService';
+
+// ... (rest of the component)
+
     // Fetch filtered visits when filters change
     useEffect(() => {
         const fetchVisits = async () => {
@@ -31,15 +35,7 @@ function WeeklyDashboard({ allTechnicians, allStatuses }) {
                 params.append('start_date', today.toISOString().split('T')[0]);
                 params.append('end_date', futureDate.toISOString().split('T')[0]);
 
-                const response = await fetch(`http://127.0.0.1:8000/dashboard/visits?${params.toString()}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch visits.');
-                }
-                const data = await response.json();
+                const data = await fetchDashboardVisits(params);
                 setVisits(data);
             } catch (err) {
                 setError(err.message);

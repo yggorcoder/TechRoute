@@ -9,6 +9,7 @@ import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-
 import { SortableVisitCard } from '../components/SortableVisitCard';
 import './DashboardPage.css';
 import { useAuth } from '../context/authContext';
+import { fetchVisits as fetchVisitsApi } from '../services/visitService';
 
 // Define a logical order for statuses
 const statusOrder = {
@@ -40,18 +41,7 @@ function DashboardPage() {
 
     const fetchVisits = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/visits', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error('Authentication failed. Please log in again.');
-                }
-                throw new Error('Failed to fetch visits.');
-            }
-            const data = await response.json();
+            const data = await fetchVisitsApi();
             setVisits(data);
             setAllTechnicians([...new Set(data.map(v => v.technician))]);
             setAllStatuses([...new Set(data.map(v => v.status))].sort((a, b) => statusOrder[a] - statusOrder[b]));

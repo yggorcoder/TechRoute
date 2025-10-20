@@ -58,6 +58,13 @@ function RegisterVisit() {
   };
   
   // Handler for form submission
+  import { createVisit } from '../services/visitService';
+
+// ... (rest of the imports)
+
+// ... (rest of the component)
+
+  // Handler for form submission
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page reload
 
@@ -67,19 +74,7 @@ function RegisterVisit() {
     };
     
     try {
-      const response = await fetch('http://127.0.0.1:8000/visits', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
-        },
-        body: JSON.stringify(finalData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to register visit.');
-      }
+      await createVisit(finalData);
 
       alert('Visit registered successfully!');
       navigate('/dashboard'); // Redirect to dashboard on success

@@ -24,23 +24,23 @@ function ProtectedRoute({ children }) {
 
 function App() {
   // Quick test for API endpoints
-  useEffect(() => {
-    const testApi = async () => {
-      try {
-        const healthResponse = await health();
-        console.log('Health check:', healthResponse.data);
+  // useEffect(() => {
+  //   const testApi = async () => {
+  //     try {
+  //       const healthResponse = await health();
+  //       console.log('Health check:', healthResponse.data);
 
-        // Generate a unique email for each test run to avoid conflicts
-        const uniqueEmail = `test-${Date.now()}@ex.com`;
-        const registerResponse = await register({ email: uniqueEmail, password: "123456", username: "testuser" });
-        console.log('Register test:', registerResponse.data);
-      } catch (error) {
-        console.error('API test failed:', error.response ? error.response.data : error.message);
-      }
-    };
+  //       // Generate a unique email for each test run to avoid conflicts
+  //       const uniqueEmail = `test-${Date.now()}@ex.com`;
+  //       const registerResponse = await register({ email: uniqueEmail, password: "123456", username: "testuser" });
+  //       console.log('Register test:', registerResponse.data);
+  //     } catch (error) {
+  //       console.error('API test failed:', error.response ? error.response.data : error.message);
+  //     }
+  //   };
 
-    testApi();
-  }, []);
+  //   testApi();
+  // }, []);
 
   return (
     <Routes>
