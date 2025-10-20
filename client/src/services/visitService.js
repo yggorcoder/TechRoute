@@ -12,15 +12,15 @@ export async function createVisit(visitData) {
   return res.data;
 }
 
-// POST /visitas/{visit_id}/notas
+// PATCH /visits/{visit_id}/notas
 export async function addNoteToVisit(visitId, noteData) {
-  const res = await api.post(`/visitas/${visitId}/notas`, noteData);
+  const res = await api.patch(`/visits/${visitId}/notas`, noteData);
   return res.data;
 }
 
-// PUT /visitas/{visit_id}/status
+// PATCH /visits/{visit_id}/status
 export async function updateVisitStatus(visitId, statusData) {
-  const res = await api.put(`/visitas/${visitId}/status`, statusData);
+  const res = await api.patch(`/visits/${visitId}/status`, statusData);
   return res.data;
 }
 
