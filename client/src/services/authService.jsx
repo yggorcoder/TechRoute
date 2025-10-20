@@ -1,24 +1,47 @@
-import { api } from '../api';
+// src/services/authService.jsx
+import { api } from "../api";
 
 const authService = {
-    /**
-     * Envia as credenciais para o endpoint de login
-     * @param {string} username
-     * @param {string} password
-     * @returns {Promise<object>} A resposta da API, contendo o token.
-     */
-    login: (username, password) => {
-        return api.post('/auth/login', { email: username, password: password });
-    },
+  /**
+   * Login usando OAuth2 password flow (form-urlencoded).
+   * O backend espera campos "username" e "password" no corpo (não JSON).
+   */
+  login: async (username, password) => {
+    const form = new URLSearchParams();
+    form.append("username", username.trim());
+    form.append("password", password);
 
-    /**
-     * Envia os dados do novo usuário para o endpoint de registro
-     * @param {object} userData - { username, email, password, role}
-     * @returns {Promise<object>} A resposta da API com os dados do usuário criado.
-     */
-    register: (userData) => {
-        return api.post('/auth/register', userData);
-    },
+    const res = await api.post("/auth/login", form, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    });
+    return res.data; // { access_token, token_type }
+  },
+
+  /**
+   * Registro de usuário (JSON).
+   * role deve ser "manager" ou "technician" (minúsculo); normalizamos aqui.
+   */
+  register: async ({ username, email, password, role }) => {
+    const payload = {
+      username: username.trim(),
+      email: email.trim(),
+      password,
+      role:
+        String(role || "manager").toLowerCase() === "technician"
+          ? "technician"
+          : "manager",
+    };
+
+    const res = await api.post("/auth/register", payload);
+    // sucesso pode ser 201 (Created) ou 200
+    if (!(res.status === 200 || res.status === 201)) {
+      throw new Error(`Register failed (${res.status})`);
+    }
+    return res.data; // { username, email, role }
+  },
+
+  health: async () => (await api.get("/health")).data,
 };
 
 export default authService;
+
