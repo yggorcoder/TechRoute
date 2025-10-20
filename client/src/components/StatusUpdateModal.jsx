@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './StatusUpdateModal.css';
+import { updateVisitStatus } from '../services/visitService';
 
 const StatusUpdateModal = ({ visitId, onClose }) => {
     const [newStatus, setNewStatus] = useState('SCHEDULED');
@@ -9,10 +10,6 @@ const StatusUpdateModal = ({ visitId, onClose }) => {
 
     const isReschedule = newStatus === 'RESCHEDULED';
     const isCommentRequired = isReschedule || newStatus === 'CANCELLED';
-
-    import { updateVisitStatus } from '../services/visitService';
-
-// ... (rest of the component)
 
     const handleSubmit = async (e) => {
         e.preventDefault();

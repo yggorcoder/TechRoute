@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/authContext';
 import './WeeklyDashboard.css';
 import VisitDetailsModal from './VisitDetailsModal'; // Assuming this modal will be created
+import { fetchDashboardVisits } from '../services/visitService';
 
 function WeeklyDashboard({ allTechnicians, allStatuses }) {
     const { token } = useAuth();
@@ -16,10 +17,6 @@ function WeeklyDashboard({ allTechnicians, allStatuses }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedVisit, setSelectedVisit] = useState(null);
 
-
-import { fetchDashboardVisits } from '../services/visitService';
-
-// ... (rest of the component)
 
     // Fetch filtered visits when filters change
     useEffect(() => {
@@ -44,7 +41,7 @@ import { fetchDashboardVisits } from '../services/visitService';
             }
         };
         fetchVisits();
-    }, [filters]);
+    }, [filters, token]);
 
     const handleFilterChange = (filterName, value) => {
         setFilters(prevFilters => {

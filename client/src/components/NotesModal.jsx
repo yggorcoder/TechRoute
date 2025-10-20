@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import './StatusUpdateModal.css'; // Reusing the same CSS for modals
+import { addNoteToVisit } from '../services/visitService';
+
 
 const NotesModal = ({ visit, onClose }) => {
     const [notes, setNotes] = useState('');
 
-    import { addNoteToVisit } from '../services/visitService';
 
 // ... (rest of the component)
 
