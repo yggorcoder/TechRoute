@@ -20,6 +20,12 @@ export const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+api.interceptors.request.use((config) => {
+  const t = localStorage.getItem("access_token");
+  if (t) config.headers.Authorization = `Bearer ${t}`;
+  return config;
+});
+
 // ---- Endpoints ----
 export const health = () => api.get("/health");
 

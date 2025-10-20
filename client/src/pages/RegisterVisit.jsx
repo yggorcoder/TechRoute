@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/authContext'; 
 import { Link, useNavigate } from 'react-router-dom'; // For navigation
 import './RegisterPage.css'; // The CSS we will create
+import { createVisit } from '../services/visitService';
+
 
 function RegisterVisit() {
   const { token } = useAuth();
@@ -56,13 +58,6 @@ function RegisterVisit() {
     setChecklistItems([...checklistItems, newItem]);
     setNewChecklistItem(''); // Clear the input
   };
-  
-  // Handler for form submission
-  import { createVisit } from '../services/visitService';
-
-// ... (rest of the imports)
-
-// ... (rest of the component)
 
   // Handler for form submission
   const handleSubmit = async (e) => {
@@ -79,9 +74,14 @@ function RegisterVisit() {
       alert('Visit registered successfully!');
       navigate('/dashboard'); // Redirect to dashboard on success
     } catch (error) {
-      console.error('Error registering visit:', error);
-      alert(error.message);
-    }
+  console.error("Error registering visit:", error);
+  const detail =
+    error?.response?.data?.detail ||
+    error?.response?.statusText ||
+    error?.message ||
+    "Failed to register visit";
+  alert(detail);
+}
   };
 
   // Here is your HTML converted to JSX
