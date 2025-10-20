@@ -13,6 +13,8 @@ starlette==0.47.3
 typing-inspection==0.4.1
 typing_extensions==4.15.0
 uvicorn==0.35.0
-passlib[bcrypt]
-python-jose[cryptography]
-gunicorn
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+gunicorn==23.0.0
+cryptography==42.0.8
+bcrypt==4.0.1
